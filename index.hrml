@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الحل النموذجي - فيزياء - منصة نوفل</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+    
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            },
+            svg: {
+                fontCache: 'global'
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        :root {
+            --bg-color: #f1f5f9;
+            --paper-color: #ffffff;
+            --text-color: #0f172a;
+            --accent-color: #10b981; /* لون أخضر دلالة على الحل والتصحيح */
+            --border-color: #94a3b8;
+            --points-color: #ef4444; /* لون أحمر للتنقيط */
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.8;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .exam-paper {
+            max-width: 900px;
+            margin: 0 auto;
+            background-color: var(--paper-color);
+            padding: 50px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            border-top: 15px solid var(--accent-color);
+            border-radius: 8px;
+        }
+
+        /* شريط الأدوات العائم */
+        .toolbar {
+            position: sticky;
+            top: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+            z-index: 100;
+        }
+
+        .btn {
+            background-color: #1d4ed8;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-family: 'Cairo', sans-serif;
+            font-weight: 700;
+            border-radius: 5px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: background-color 0.3s;
+        }
+
+        .btn:hover { background-color: #1e40af; }
+        .btn-green { background-color: var(--accent-color); }
+        .btn-green:hover { background-color: #059669; }
+
+        /* الترويسة */
+        .header {
+            text-align: center;
+            border-bottom: 3px double var(--text-color);
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        .header h1 { font-size: 1.6em; margin: 0 0 10px 0; font-weight: 900; }
+        .header h2 { font-size: 1.3em; margin: 5px 0; font-weight: 700; color: #334155; }
+        .header .badge {
+            display: inline-block;
+            background-color: #dcfce7;
+            color: #166534;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: 900;
+            margin-top: 10px;
+            border: 1px solid #bbf7d0;
+        }
+
+        .exercise-title {
+            font-size: 1.3em;
+            font-weight: 900;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            background-color: #f8fafc;
+            padding: 10px 15px;
+            border-right: 4px solid var(--accent-color);
+            border-radius: 4px;
+        }
+
+        .solution-step {
+            margin-bottom: 20px;
+            padding-right: 15px;
+            border-right: 2px dashed #cbd5e1;
+        }
+
+        .step-title {
+            font-weight: bold;
+            color: #1e293b;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        /* تنسيق التنقيط */
+        .point {
+            background-color: #fee2e2;
+            color: var(--points-color);
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            font-weight: 900;
+            margin-right: 10px;
+            border: 1px solid #fca5a5;
+            transition: opacity 0.3s ease;
+        }
+
+        .hide-points .point {
+            display: none !important;
+        }
+
+        .math-block {
+            overflow-x: auto;
+            padding: 10px 0;
+            margin: 10px 0;
+        }
+
+        /* جدول التنقيط النهائي */
+        .rubric-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 40px;
+            font-size: 1.1em;
+            text-align: center;
+        }
+
+        .rubric-table th, .rubric-table td {
+            border: 1px solid var(--border-color);
+            padding: 12px;
+        }
+
+        .rubric-table th {
+            background-color: #f1f5f9;
+            font-weight: bold;
+        }
+
+        .total-row {
+            background-color: #dcfce7;
+            font-weight: 900;
+            font-size: 1.2em;
+        }
+
+        @media print {
+            .toolbar { display: none; }
+            body { background-color: white; }
+            .exam-paper { box-shadow: none; padding: 0; max-width: 100%; border: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="toolbar">
+        <button class="btn" onclick="window.print()">🖨️ طباعة الحل</button>
+        <button class="btn btn-green" id="togglePointsBtn" onclick="togglePoints()">👁️ إخفاء/إظهار التنقيط</button>
+    </div>
+
+    <div class="exam-paper" id="examPaper">
+        <div class="header">
+            <h1>منصة نوفل التعليمية</h1>
+            <h2>امتحان بكالوريا تجريبي - علوم فيزيائية (الظواهر الكهربائية)</h2>
+            <div class="badge">الحل النموذجي المفصل + سلم التنقيط</div>
+        </div>
+
+        <div class="exercise-title">
+            <span>حل التمرين الأول: دارة الشحن</span>
+            <span class="point">(06 نقاط)</span>
+        </div>
+
+        <div class="solution-step">
+            <div class="step-title">1. المخطط الكهربائي للدارة: <span class="point">1.0 ن</span></div>
+            <ul>
+                <li>رسم الدارة على التسلسل (مولد، مكثفة، ناقل أومي، قاطعة). <span class="point">0.25 ن</span></li>
+                <li>توجيه سهم التيار $i$ (يخرج من القطب الموجب للمولد). <span class="point">0.25 ن</span></li>
+                <li>تمثيل التوتر $u_C$ (عكس جهة التيار). <span class="point">0.25 ن</span></li>
+                <li>تمثيل التوتر $u_R$ (عكس جهة التيار). <span class="point">0.25 ن</span></li>
+            </ul>
+        </div>
+
+        <div class="solution-step">
+            <div class="step-title">2. المعادلة التفاضلية للتوتر $u_C(t)$: <span class="point">1.0 ن</span></div>
+            <p>بتطبيق قانون جمع التوترات: $$u_R + u_C = E$$</p>
+            <p>حسب قانون أوم: $u_R = R \cdot i$ ولدينا $i = \frac{dq}{dt} = C \frac{du_C}{dt}$</p>
+            <div class="math-block">
+                $$R \cdot C \frac{du_C}{dt} + u_C = E$$
+                بالقسمة على $RC$ نجد:
+                $$\frac{du_C}{dt} + \frac{1}{RC} u_C = \frac{E}{RC}$$
+            </div>
+        </div>
+
+        <div class="solution-step">
+            <div class="step-title">3. إيجاد عبارة الثابتين $A$ و $\alpha$: <span class="point">1.5 ن</span></div>
+            <p>لدينا الحل: $u_C(t) = A(1 - e^{-\alpha t}) = A - A e^{-\alpha t}$</p>
+            <p>نشتق الحل: $\frac{du_C}{dt} = A \alpha e^{-\alpha t}$</p>
+            <p>نعوض في المعادلة التفاضلية:</p>
+            <div class="math-block">
+                $$RC(A \alpha e^{-\alpha t}) + A - A e^{-\alpha t} = E$$
+                $$A e^{-\alpha t} (RC \alpha - 1) + A - E = 0$$
+            </div>
+            <p>لكي تتحقق المعادلة في كل لحظة زمنية، يجب أن يكون:</p>
+            <ul>
+                <li>$A - E = 0 \implies A = E$ <span class="point">0.75 ن</span></li>
+                <li>$RC \alpha - 1 = 0 \implies \alpha = \frac{1}{RC} = \frac{1}{\tau}$ <span class="point">0.75 ن</span></li>
+            </ul>
+        </div>
+
+        <div class="solution-step">
+            <div class="step-title">4. التحليل البعدي لثابت الزمن $\tau$: <span class="point">1.0 ن</span></div>
+            <p>لدينا $\tau = R \cdot C \implies [\tau] = [R] \cdot [C]$</p>
+            <ul>
+                <li>من قانون أوم: $[R] = \frac{[U]}{[I]}$</li>
+                <li>من علاقة الشحنة: $[C] = \frac{[I] \cdot [T]}{[U]}$</li>
+            </ul>
+            <div class="math-block">
+                $$[\tau] = \frac{[U]}{[I]} \cdot \frac{[I] \cdot [T]}{[U]} = [T]$$
+            </div>
+            <p>ومنه لثابت الزمن $\tau$ بُعد زمني، ووحدته هي الثانية (s). <span class="point">1.0 ن</span></p>
+        </div>
+
+        <div class="solution-step">
+            <div class="step-title">5. شدة التيار الأعظمية $I_0$ واستنتاج $i(t)$: <span class="point">1.5 ن</span></div>
+            <ul>
+                <li><strong>عبارة $I_0$:</strong> لحظة الغلق ($t=0$)، المكثفة فارغة $u_C(0) = 0$. <br> 
+                حسب قانون جمع التوترات: $u_R(0) = E \implies R \cdot I_0 = E \implies I_0 = \frac{E}{R}$ <span class="point">0.5 ن</span></li>
+                <li><strong>استنتاج $i(t)$:</strong> لدينا $i(t) = C \frac{du_C}{dt}$<br>
+                نشتق عبارة التوتر: $i(t) = C \cdot \frac{E}{RC} e^{-t/\tau} \implies i(t) = \frac{E}{R} e^{-t/\tau} \implies i(t) = I_0 e^{-t/\tau}$ <span class="point">1.0 ن</span></li>
+            </ul>
+        </div>
+
+        <hr style="border-top: 1px solid #e2e8f0; margin: 40px 0;">
+
+        <div class="exercise-title">
+            <span>حل التمرين الثاني: دارة التفريغ واستغلال البيان</span>
+            <span class="point">(07 نقاط)</span>
+        </div>
+
+        <div class="solution-step">
+            <div class="step-title">1. المعادلة التفاضلية للشحنة $q(t)$: <span class="point">1.5 ن</span></div>
+            <p>بتطبيق قانون جمع التوترات (عملية التفريغ): $$u_{R'} + u_C = 0$$</p>
+            <div class="math-block">
+                $$R' \frac{dq}{dt} + \frac{q}{C} = 0$$
+                بالقسمة على $R'$:
+                $$\frac{dq}{dt} + \frac{1}{R'C} q = 0$$
+            </div>
+        </div>
+
+        <div class="solution-step">
+            <div class="step-title">2. استنتاج عبارة $u_C(t)$: <span class="point">1.0 ن</span></div>
+            <p>لدينا $u_C(t) = \frac{q(t)}{C}$</p>
+            <p>بما أن المكثفة كانت مشحونة كلياً، فإن الشحنة الابتدائية $q_0 = C \cdot E$. بالتعويض:</p>
+            <div class="math-block">
+                $$u_C(t) = \frac{C \cdot E \cdot e^{-t/\tau'}}{C} \implies u_C(t) = E \cdot e^{-t/\tau'}$$
+            </div>
+        </div>
+
+        <div class="solution-step">
+            <div class="step-title">3. استغلال البيان $\ln(u_C) = f(t)$: <span class="point">4.5 ن</span></div>
+            
+            <p><strong>أ) العبارة النظرية:</strong> <span class="point">1.5 ن</span></p>
+            <p>بإدخال دالة ($\ln$) على عبارة التوتر:</p>
+            <div class="math-block">
+                $$\ln(u_C) = \ln(E \cdot e^{-t/\tau'}) = \ln(E) - \frac{1}{\tau'} t$$
+            </div>
+
+            <p><strong>ب) المطابقة لاستنتاج $E$ و $\tau'$:</strong> <span class="point">2.0 ن</span></p>
+            <p>العبارة البيانية: $\ln(u_C) = a \cdot t + b$</p>
+            <ul>
+                <li>$b = \ln(E) \implies 1.6 = \ln(E) \implies E = e^{1.6} \approx 4.95 V$ <span style="color: gray;">(تقبل $5V$)</span> <span class="point">1.0 ن</span></li>
+                <li>$a = -\frac{1}{\tau'} \implies -50 = -\frac{1}{\tau'} \implies \tau' = \frac{1}{50} = 0.02 s$ <span class="point">1.0 ن</span></li>
+            </ul>
+
+            <p><strong>ج) حساب المقاومة $R'$:</strong> <span class="point">1.0 ن</span></p>
+            <div class="math-block">
+                $$\tau' = R' \cdot C \implies R' = \frac{\tau'}{C}$$
+                $$R' = \frac{0.02}{20 \times 10^{-6}} = 1000 \ \Omega = 1 \ k\Omega$$
+            </div>
+        </div>
+
+        <hr style="border-top: 1px solid #e2e8f0; margin: 40px 0;">
+
+        <div class="exercise-title">
+            <span>حل التمرين الثالث: الطاقة والمنحنى المشتق</span>
+            <span class="point">(07 نقاط)</span>
+        </div>
+
+        <div class="solution-step">
+            <div class="step-title">1. عبارة الطاقة المخزنة $E_C(t)$: <span class="point">1.0 ن</span></div>
+            <div class="math-block">
+                $$E_C(t) = \frac{1}{2} C \cdot u_C^2(t)$$
+                $$E_C(t) = \frac{1}{2} C \left( E(1 - e^{-t/\tau}) \right)^2 = \frac{1}{2} C \cdot E^2 (1 - e^{-t/\tau})^2$$
+            </div>
+        </div>
+
+        <div class="solution-step">
+            <div class="step-title">2. عبارة الطاقة الأعظمية $E_{C(max)}$: <span class="point">1.0 ن</span></div>
+            <p>في النظام الدائم ($t \to \infty$)، يؤول التوتر إلى $E$:</p>
+            <div class="math-block">
+                $$E_{C(max)} = \frac{1}{2} C \cdot E^2$$
+            </div>
+        </div>
+
+        <div class="solution-step">
+            <div class="step-title">3. تبيان علاقة $t_{1/2}$: <span class="point">2.0 ن</span></div>
+            <p>عند اللحظة $t_{1/2}$ لدينا: $E_C(t_{1/2}) = \frac{E_{C(max)}}{2}$</p>
+            <div class="math-block">
+                $$\frac{1}{2} C \cdot E^2 (1 - e^{-t_{1/2}/\tau})^2 = \frac{1}{2} \left( \frac{1}{2} C \cdot E^2 \right)$$
+                نختزل ونجذر الطرفين:
+                $$1 - e^{-t_{1/2}/\tau} = \frac{1}{\sqrt{2}} \implies e^{-t_{1/2}/\tau} = \frac{\sqrt{2} - 1}{\sqrt{2}}$$
+                بإدخال $\ln$:
+                $$-\frac{t_{1/2}}{\tau} = \ln \left( \frac{\sqrt{2} - 1}{\sqrt{2}} \right)$$
+                $$t_{1/2} = \tau \cdot \ln \left( \frac{\sqrt{2}}{\sqrt{2} - 1} \right)$$
+            </div>
+            <p style="color: #16a34a; font-weight: bold;">(وهو المطلوب)</p>
+        </div>
+
+        <div class="solution-step">
+            <div class="step-title">4. طريقة المنحنى المشتق: <span class="point">1.5 ن</span></div>
+            <p>من المعادلة التفاضلية للشحن: $RC \frac{du_C}{dt} + u_C = E$</p>
+            <div class="math-block">
+                $$\frac{du_C}{dt} = \frac{E - u_C}{RC} \implies \frac{du_C}{dt} = -\frac{1}{\tau} u_C + \frac{E}{\tau}$$
+            </div>
+        </div>
+
+        <div class="solution-step">
+            <div class="step-title">5. المدلول الفيزيائي للميل والتقاطع: <span class="point">1.5 ن</span></div>
+            <ul>
+                <li><strong>الميل ($a$):</strong> يمثل مقلوب ثابت الزمن بإشارة سالبة $\left( -\frac{1}{\tau} \right)$. <span class="point">0.75 ن</span></li>
+                <li><strong>نقطة التقاطع مع محور الفواصل:</strong> تنعدم المشتقة $\left(\frac{du_C}{dt}=0\right) \implies -\frac{1}{\tau} u_C + \frac{E}{\tau} = 0 \implies u_C = E$. إذن تمثل <strong>القوة المحركة الكهربائية للمولد ($E$)</strong>. <span class="point">0.75 ن</span></li>
+            </ul>
+        </div>
+
+        <table class="rubric-table">
+            <thead>
+                <tr>
+                    <th>التمرين</th>
+                    <th>العلامة الجزئية</th>
+                    <th>العلامة الإجمالية للتمرين</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>الأول</strong></td>
+                    <td>المخطط (1.0) | المعادلة (1.0) | الثوابت (1.5) | التحليل (1.0) | التيار (1.5)</td>
+                    <td><strong>06 نقاط</strong></td>
+                </tr>
+                <tr>
+                    <td><strong>الثاني</strong></td>
+                    <td>المعادلة (1.5) | التوتر (1.0) | العلاقة (1.5) | المطابقة (2.0) | المقاومة (1.0)</td>
+                    <td><strong>07 نقاط</strong></td>
+                </tr>
+                <tr>
+                    <td><strong>الثالث</strong></td>
+                    <td>E_C (1.0) | Max (1.0) | الإثبات (2.0) | مشتق (1.5) | الدلالة (1.5)</td>
+                    <td><strong>07 نقاط</strong></td>
+                </tr>
+                <tr class="total-row">
+                    <td colspan="2">المجموع العام للعلامة</td>
+                    <td style="color: var(--points-color);">20 / 20</td>
+                </tr>
+            </tbody>
+        </table>
+
+    </div>
+
+    <script>
+        function togglePoints() {
+            const paper = document.getElementById('examPaper');
+            paper.classList.toggle('hide-points');
+        }
+    </script>
+
+</body>
+</html>
